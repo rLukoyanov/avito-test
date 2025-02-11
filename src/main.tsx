@@ -1,10 +1,13 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import ItemPage from './pages/ItemPage';
-import ListPage from './pages/ListPage';
-import FormPage from './pages/FromPage';
-import { FormProvider } from './store/FormContext';
+import { StrictMode } from "react";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+
+import ItemPage from "./pages/ItemPage";
+import ListPage from "./pages/ListPage";
+import FormPage from "./pages/FromPage";
+
+import { store } from "./store/store";
 
 const router = createBrowserRouter([
   {
@@ -21,10 +24,10 @@ const router = createBrowserRouter([
   },
 ]);
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <FormProvider>
+    <Provider store={store}>
       <RouterProvider router={router} />
-    </FormProvider>
-  </StrictMode>,
-)
+    </Provider>
+  </StrictMode>
+);
