@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Button, Spin } from 'antd';
-import { fetchItemById } from '../api/items';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Card, Button, Spin } from "antd";
+import { fetchItemById } from "../api/items";
+import { AdvertisementDescriptions } from "../components/AnnouncementDescription";
+import { AllTypesOfAdvertisements } from "../types/api";
 
 const ItemPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [ad, setAd] = useState<any | null>(null);
+  const [ad, setAd] = useState<AllTypesOfAdvertisements>();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -19,7 +21,7 @@ const ItemPage = () => {
       const data = await fetchItemById(id!);
       setAd(data);
     } catch (error) {
-      console.error('Ошибка загрузки объявления:', error);
+      console.error("Ошибка загрузки объявления:", error);
     } finally {
       setLoading(false);
     }
@@ -31,17 +33,34 @@ const ItemPage = () => {
 
   return (
     <Card
-      title={ad.title}
+      title={ad.name}
       extra={
         <Button onClick={() => navigate(`/form?id=${ad.id}`)} type="primary">
           Редактировать
         </Button>
       }
     >
-      <p><strong>Описание:</strong> {ad.description}</p>
-      <p><strong>Локация:</strong> {ad.location}</p>
-      <p><strong>Категория:</strong> {ad.category}</p>
-      {ad.photo && <img src={ad.photo} alt="Фото" style={{ maxWidth: '100%' }} />}
+      {ad.photo ? (
+        <img src={ad.photo} alt="Фото" style={{ maxWidth: "100%" }} />
+      ) : (
+        <div
+          style={{
+            width: "400px",
+            height: "200px",
+            backgroundColor: "rgb(243 243 243)",
+          }}
+        ></div>
+      )}
+      <p>
+        <strong>Описание:</strong> {ad.description}
+      </p>
+      <p>
+        <strong>Локация:</strong> {ad.location}
+      </p>
+      <p>
+        <strong>Категория:</strong> {ad.type}
+      </p>
+      <AdvertisementDescriptions advertisement={ad}/>
     </Card>
   );
 };

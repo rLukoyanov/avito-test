@@ -11,7 +11,7 @@ export const fetchItems = async (params: Partial<SearchParams> = {}) => {
 };
 
 // Получить объявление по ID
-export const fetchItemById = async (id: number) => {
+export const fetchItemById = async (id: string) => {
   const response = await api.get(`/items/${id}`);
   return response.data;
 };

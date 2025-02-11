@@ -5,7 +5,6 @@ import { FormActions, useStepForm } from "../store/FormContext";
 
 export const FirstStep = () => {
   const { dispatch, state } = useStepForm();
-  console.log(state)
 
   const handleChange = (
     value: Categories | string,

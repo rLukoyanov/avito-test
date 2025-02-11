@@ -1,17 +1,21 @@
 import { Card } from "antd";
 import { AllTypesOfAdvertisements } from "../types/api";
+import { useNavigate } from "react-router-dom";
 
 const { Meta } = Card;
 
 export const Announcement = ({
+  id,
   name,
   photo,
   type,
   location,
 }: AllTypesOfAdvertisements) => {
+  const navigate = useNavigate()
   return (
     <Card
       hoverable
+      onClick={() => navigate(`/item/${id}`)}
       style={{ width: 400 }}
       cover={
         photo ? (
