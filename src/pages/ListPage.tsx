@@ -1,22 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, SyntheticEvent } from "react";
 import { Button, Input, Spin, Pagination, Flex, notification } from "antd";
 import { useNavigate } from "react-router-dom";
+
 import { fetchItems } from "../api/items";
 import { AllTypesOfAdvertisements, Categories } from "../types/api";
-import { CategorySelect } from "../components/CategoriesSelect";
-import { Announcement } from "../components/Announcement";
 
-const { Search } = Input;
+import { CategorySelect, Announcement } from "../components";
+
+import { usePagination, useQueryFilters, useFilters } from "../hooks";
 
 const ListPage = () => {
+  const navigate = useNavigate();
+
   const [api, contextHolder] = notification.useNotification();
   const [ads, setAds] = useState<AllTypesOfAdvertisements[]>([]);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(1);
+
   const [total, setTotal] = useState(0);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState<Categories>();
-  const navigate = useNavigate();
+
+  const { search, category, setSearch, setCategory } = useFilters();
+  const { page, setPage, paginationProps } = usePagination({ total });
+  useQueryFilters({ search, category });
 
   useEffect(() => {
     loadAds();
@@ -39,8 +43,8 @@ const ListPage = () => {
     }
   };
 
-  const handleSearch = (value: string) => {
-    setSearch(value);
+  const handleSearch = (event: SyntheticEvent) => {
+    setSearch((event.target as HTMLInputElement).value);
     setPage(1);
   };
 
@@ -49,20 +53,17 @@ const ListPage = () => {
     setPage(1);
   };
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
-
   return (
     <div>
       {contextHolder}
       <div style={{ marginBottom: 16 }}>
-        <Search
+        <Input
           placeholder="Поиск по названию"
-          onSearch={handleSearch}
+          value={search}
+          onChange={handleSearch}
           style={{ width: 200, marginRight: 16 }}
         />
-        <CategorySelect onChange={handleCategoryChange} />
+        <CategorySelect value={category} onChange={handleCategoryChange} />
         <Button
           type="primary"
           style={{ marginLeft: 16 }}
@@ -94,14 +95,7 @@ const ListPage = () => {
           transform: "translateX(-50%)",
         }}
       >
-        <Pagination
-          current={page}
-          total={total}
-          pageSize={5}
-          onChange={handlePageChange}
-          showSizeChanger={false}
-          style={{ marginTop: "20px" }}
-        />
+        <Pagination {...paginationProps} style={{ marginTop: "20px" }} />
       </div>
     </div>
   );
