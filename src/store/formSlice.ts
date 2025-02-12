@@ -1,25 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { Advertisement, AllFieldsOfAdvertisements } from "../types/api";
+import { Advertisement } from "../types/api";
 
-type State = {
-  firstStep: Record<keyof Advertisement, unknown>;
-  secondStep: Partial<
-    Omit<Record<AllFieldsOfAdvertisements, string>, keyof Advertisement>
-  >;
-};
-
-const initialState: State = {
-  firstStep: {
-    id: null,
-    name: null,
-    description: null,
-    location: null,
-    photo: null,
-    type: null,
-  },
-  secondStep: {},
-};
+const initialState: Record<string, Record<string, unknown>> = {};
 
 export const formSlice = createSlice({
   name: "form",
@@ -29,12 +12,17 @@ export const formSlice = createSlice({
       state,
       action: PayloadAction<{ fieldName: keyof Advertisement; value: string }>
     ) => {
-      console.log(action.payload);
       state.firstStep[action.payload.fieldName] = action.payload.value;
+    },
+    setFormStep: (
+      state,
+      action: PayloadAction<{ step: number; value: Record<string, unknown> }>
+    ) => {
+      state[action.payload.step] = action.payload.value;
     },
   },
 });
 
-export const { setFirstStep } = formSlice.actions;
+export const { setFormStep } = formSlice.actions;
 
 export default formSlice.reducer;
