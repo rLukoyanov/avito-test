@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, notification, Result, Steps } from "antd";
+import { Button, notification, Result, Steps, Typography } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FormFirstStep } from "../components/FormFirstStep";
@@ -7,6 +7,8 @@ import { FormSecondStep } from "../components/FormSecondStep";
 import { setFormStep } from "../store/formSlice";
 import { createItem, updateItem } from "../api/items";
 import { RootState } from "../store/store";
+
+const { Title } = Typography;
 
 const steps = ["Основная информация", "Информация об категории", "Подтверждение"];
 
@@ -48,6 +50,7 @@ const FormPage: React.FC = () => {
   return (
     <div style={{ padding: 24 }}>
       {contextHolder}
+      <Title level={2}>{id ? "Редактирование объявления" : "Создание объявления"}</Title>
       <Steps current={current} items={steps.map((title) => ({ key: title, title }))} />
       <br />
       {current === 0 && <FormFirstStep onSubmit={handleNext} />}
