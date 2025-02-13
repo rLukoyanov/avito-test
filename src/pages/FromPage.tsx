@@ -1,21 +1,14 @@
 import React, { useState } from "react";
 import { Button, notification, Result, Steps } from "antd";
-import { FormFirstStep } from "../components/FormFirstStep";
 import { useDispatch, useSelector } from "react-redux";
-import { setFormStep } from "../store/formSlice";
-import { FormSecondStep } from "../components/FormSecondStep";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { FormFirstStep } from "../components/FormFirstStep";
+import { FormSecondStep } from "../components/FormSecondStep";
+import { setFormStep } from "../store/formSlice";
 import { createItem, updateItem } from "../api/items";
 import { RootState } from "../store/store";
 
-const steps = [
-  {
-    title: "Основная информация",
-  },
-  {
-    title: "Информация об категории",
-  },
-];
+const steps = ["Основная информация", "Информация об категории", "Подтверждение"];
 
 const FormPage: React.FC = () => {
   const [api, contextHolder] = notification.useNotification();
@@ -23,16 +16,13 @@ const FormPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const id = params.get("id");
-
+  
   const [loading, setLoading] = useState(false);
   const [current, setCurrent] = useState(0);
-
   const formSteps = useSelector((state: RootState) => state.formReducer);
 
-  const onFinish = async () => {
-    const item = Object.values(formSteps).reduce((acc, value) => {
-      return { ...acc, ...value };
-    }, {});
+  const handleSubmit = async () => {
+    const item = Object.assign({}, ...Object.values(formSteps));
 
     try {
       setLoading(true);
@@ -41,59 +31,34 @@ const FormPage: React.FC = () => {
       } else {
         await createItem(item);
       }
-
-      api.success({
-        message: "Обьявление успешно создано",
-        duration: 0,
-      });
+      api.success({ message: "Объявление успешно создано", duration: 0 });
     } catch (error) {
-      api.error({
-        message: "Ошибка создания обьявления:",
-        description: String(error),
-        duration: 0,
-      });
+      api.error({ message: "Ошибка создания объявления", description: String(error), duration: 0 });
     } finally {
       setLoading(false);
       navigate("/");
     }
   };
 
-  const next = () => {
+  const handleNext = (data: Record<string, unknown>) => {
+    dispatch(setFormStep({ step: current + 1, value: data }));
     setCurrent((prev) => prev + 1);
   };
-
-  const items = steps.map((item) => ({ key: item.title, title: item.title }));
 
   return (
     <div style={{ padding: 24 }}>
       {contextHolder}
-      <Steps current={current} items={items} />
+      <Steps current={current} items={steps.map((title) => ({ key: title, title }))} />
       <br />
-      {current === 0 && (
-        <FormFirstStep
-          onSubmit={(data) => {
-            dispatch(setFormStep({ step: 1, value: data }));
-            next();
-          }}
-        />
-      )}
-      {current === 1 && (
-        <FormSecondStep
-          onSubmit={(data) => {
-            dispatch(setFormStep({ step: 2, value: data }));
-            next();
-          }}
-        />
-      )}
+      {current === 0 && <FormFirstStep onSubmit={handleNext} />}
+      {current === 1 && <FormSecondStep onSubmit={handleNext} />}
       {current === 2 && (
         <Result
           status="success"
-          title="Подтвердите создание обьявления"
+          title="Подтвердите создание объявления"
           extra={[
-            <Button loading={loading} onClick={onFinish}>
-              Завершить
-            </Button>,
-            <Button onClick={() => navigate("/")}>Отменить</Button>,
+            <Button key="submit" loading={loading} onClick={handleSubmit}>Завершить</Button>,
+            <Button key="cancel" onClick={() => navigate("/")}>Отменить</Button>
           ]}
         />
       )}
