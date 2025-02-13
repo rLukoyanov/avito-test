@@ -1,104 +1,56 @@
-import { useState, useEffect, SyntheticEvent } from "react";
-import { Button, Input, Spin, Pagination, Flex, notification } from "antd";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useCallback } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Card, Button, Spin } from "antd";
+import { fetchItemById } from "../api/items";
+import { AdvertisementDescriptions } from "../components/AnnouncementDescription";
+import { AllTypesOfAdvertisements } from "../types/api";
 
-import { fetchItems } from "../api/items";
-import { AllTypesOfAdvertisements, Categories } from "../types/api";
-
-import { CategorySelect, Announcement } from "../components";
-
-import { usePagination, useQueryFilters, useFilters } from "../hooks";
-
-const ListPage = () => {
+const ItemPage: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
-  const [api, contextHolder] = notification.useNotification();
-  const [ads, setAds] = useState<AllTypesOfAdvertisements[]>([]);
+  const [ad, setAd] = useState<AllTypesOfAdvertisements | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const [total, setTotal] = useState(0);
-
-  const { search, category, setSearch, setCategory } = useFilters();
-  const { page, setPage, paginationProps } = usePagination({ total });
-  useQueryFilters({ search, category });
-
-  useEffect(() => {
-    loadAds();
-  }, [page, search, category]);
-
-  const loadAds = async () => {
+  const loadAd = useCallback(async () => {
+    if (!id) return;
     setLoading(true);
     try {
-      const { items, total } = await fetchItems({ page, search, category });
-      setAds(items);
-      setTotal(total);
+      const data = await fetchItemById(id);
+      setAd(data);
     } catch (error) {
-      api.error({
-        message: "Ошибка загрузки объявлений:",
-        description: String(error),
-        duration: 0,
-      });
+      console.error("Ошибка загрузки объявления:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
-  const handleSearch = (event: SyntheticEvent) => {
-    setSearch((event.target as HTMLInputElement).value);
-    setPage(1);
-  };
+  useEffect(() => {
+    loadAd();
+  }, [loadAd]);
 
-  const handleCategoryChange = (value: Categories) => {
-    setCategory(value);
-    setPage(1);
-  };
+  if (loading) return <Spin />;
+  if (!ad) return <div>Объявление не найдено</div>;
 
   return (
-    <div>
-      {contextHolder}
-      <div style={{ marginBottom: 16 }}>
-        <Input
-          placeholder="Поиск по названию"
-          value={search}
-          onChange={handleSearch}
-          style={{ width: 200, marginRight: 16 }}
-        />
-        <CategorySelect value={category} onChange={handleCategoryChange} />
-        <Button
-          type="primary"
-          style={{ marginLeft: 16 }}
-          onClick={() => navigate("/form")}
-        >
-          Разместить объявление
+    <Card
+      title={ad.name}
+      extra={
+        <Button onClick={() => navigate(`/form?id=${ad.id}`)} type="primary">
+          Редактировать
         </Button>
-      </div>
-
-      {loading ? (
-        <Flex justify="center" align="center" style={{ height: "100vh" }}>
-          <Spin size="large" />
-        </Flex>
+      }
+    >
+      {ad.photo ? (
+        <img src={ad.photo} alt="Фото" style={{ maxWidth: "100%" }} />
       ) : (
-        <Flex wrap gap="small">
-          {ads.map((ad) => (
-            <Announcement key={ad.id} {...ad} />
-          ))}
-        </Flex>
+        <div style={{ width: "400px", height: "200px", backgroundColor: "rgb(243 243 243)" }}></div>
       )}
-
-      <div
-        style={{
-          marginTop: 16,
-          textAlign: "center",
-          position: "fixed",
-          bottom: 32,
-          left: "50%",
-          transform: "translateX(-50%)",
-        }}
-      >
-        <Pagination {...paginationProps} style={{ marginTop: "20px" }} />
-      </div>
-    </div>
+      <p><strong>Описание:</strong> {ad.description}</p>
+      <p><strong>Локация:</strong> {ad.location}</p>
+      <p><strong>Категория:</strong> {ad.type}</p>
+      <AdvertisementDescriptions advertisement={ad} />
+    </Card>
   );
 };
 
-export default ListPage;
+export default ItemPage;
