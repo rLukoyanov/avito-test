@@ -25,7 +25,7 @@ export const createItem = async (item: Partial<AllTypesOfAdvertisements>) => {
 
 // Обновить существующее объявление
 export const updateItem = async (
-  id: number,
+  id: string,
   item: Partial<AllTypesOfAdvertisements>
 ) => {
   const response = await api.put(`/items/${id}`, item);
@@ -33,7 +33,7 @@ export const updateItem = async (
 };
 
 // Удалить объявление
-export const deleteItem = async (id: number) => {
+export const deleteItem = async (id: string) => {
   const response = await api.delete(`/items/${id}`);
   return response.status === 204;
 };

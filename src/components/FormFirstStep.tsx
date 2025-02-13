@@ -4,6 +4,7 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import { fetchItemById } from "../api/items";
 
+
 type FormState = {
   name: string;
   description: string;
@@ -18,13 +19,15 @@ export const FormFirstStep = ({
   onSubmit: SubmitHandler<FormState>;
 }) => {
   const [params] = useSearchParams();
-  const id = params.get("id")
+  const id = params.get("id");
+
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<FormState>({
-    defaultValues: async () => id ? await fetchItemById(params.get("id") || "") : null,
+    defaultValues: async () =>
+      id ? await fetchItemById(id || "") : null,
   });
 
   return (
@@ -50,6 +53,7 @@ export const FormFirstStep = ({
           render={({ field }) => (
             <Input.TextArea
               {...field}
+              
               placeholder="Введите описание"
               rows={4}
             />
@@ -99,7 +103,7 @@ export const FormFirstStep = ({
       </Form.Item>
       <Form.Item>
         <Button type="primary" onClick={handleSubmit(onSubmit)}>
-          Submit
+          Далее
         </Button>
       </Form.Item>
     </Form>
