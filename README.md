@@ -1,50 +1,41 @@
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+# Avito test task (rLukoyanov)
+Разработать клон Avito с базовыми возможностями по работе с объявлениями. Приложение должно поддерживать размещение, редактирование и отображение объявлений в трех различных категориях: недвижимость, авто и услуги.
+## Список библиотек
+```
+   "@ant-design/icons": "^5.6.0",
+    "@reduxjs/toolkit": "^2.5.1",
+    "antd": "^5.23.2",
+    "axios": "^1.7.9",
+    "qs": "^6.14.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.54.2",
+    "react-redux": "^9.2.0",
+    "react-router-dom": "^6.28.2"
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Роутинг
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+`/` - корень страницы, где выводится список обьявлений
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+`/item/:id` - просмотр конкретного обьявления
+
+`/form?id=` - форма создания/редактирования обьявления
+
+## Задачи
+
+- [ ] Размещение объявлений: многошаговая форма для размещения объявлений
+- [ ] Список объявлений: отображение всех размещенных объявлений
+- [ ] Просмотр объявления: детальная карточка объявления с возможностью редактирования
+- [ ] Редактирование объявлений: изменение существующих объявлений с предзаполненными данными
+- [ ] Если форма находится в режиме редактирования - нужно каким-либо образом отобразить это визуально (например, с помощью заголовка)
+- [ ] Также должна быть реализована валидация всех полей
+- [ ] Реализован поиск объявления по названию
+- [ ] На странице есть кнопка "Разместить объявление", которая будет вести на форму
+- [ ] Максимальное количество объявлений на странице - 5
+- [ ] Реализована фильтрация по категории объявления
+- [ ] Возможность редактирования объявления: переход на /form с предзаполненными данными
+- [ ] При перезагрузке страницы данные формы должны сохраняться в черновик.
+
+## Запуск проекта и его тестирование
+...
